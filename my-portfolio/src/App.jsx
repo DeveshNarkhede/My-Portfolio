@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
+import ParticleCanvas from "./components/ParticleCanvas";
+import Nav            from "./components/Nav";
+import Footer         from "./components/Footer";
+
+import Home         from "./sections/Home";
+import Skills       from "./sections/Skills";
+import Achievements from "./sections/Achievements";
+import Projects     from "./sections/Projects";
+import Contact      from "./sections/Contact";
+
+export default function App() {
+  const [active,    setActive]    = useState("home");
+  const [animating, setAnimating] = useState(false);
+
+  const navigate = (section) => {
+    if (section === active) return;
+    setAnimating(true);
+    setTimeout(() => {
+      setActive(section);
+      setAnimating(false);
+      window.scrollTo(0, 0);
+    }, 300);
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      <ParticleCanvas />
 
-export default App
+      <Nav active={active} setActive={navigate} />
+
+      <main
+        style={{
+          position:   "relative",
+          zIndex:     1,
+          opacity:    animating ? 0 : 1,
+          transform:  animating ? "translateY(20px)" : "none",
+          transition: "opacity 0.3s ease, transform 0.3s ease",
+        }}
+      >
+        {active === "home"         && <Home setActive={navigate} />}
+        {active === "skills"       && <Skills />}
+        {active === "achievements" && <Achievements />}
+        {active === "projects"     && <Projects />}
+        {active === "contact"      && <Contact />}
+      </main>
+
+      <Footer />
+    </>
+  );
+}
